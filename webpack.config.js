@@ -9,6 +9,17 @@ const {
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
+    
+    mode: 'development',
+    //调试服务
+    devServer: {
+        contentBase: resolve(__dirname, 'build'),
+        compress: true,
+        port: 3000,
+        open: true
+    },
+    //调试工具
+    devtool: 'sourcr-map',
 
     entry: './src/index.js',
 
@@ -20,6 +31,10 @@ module.exports = {
 
     module: {
         rules: [{
+                test: /\.tsx?$/,
+                loader: 'awesome-typescript-loader'
+            },
+            {
                 test: /\.less$/,
                 use: ['style-loader', 'css-loader', 'less-loader']
             },
@@ -56,12 +71,4 @@ module.exports = {
         })
     ],
 
-    devServer: {
-        contentBase: resolve(__dirname, 'build'),
-        compress: true,
-        port: 3000,
-        open: true
-    },
-
-    mode: 'development'
 };
