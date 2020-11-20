@@ -5,17 +5,190 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PPcad</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.8.2/pixi.js"></script>
 </head>
 
 <body>
     <h1>PPcads</h1>
-    <span class="iconfont icon-icon-test"></span>
+    <!-- <span class="iconfont icon-icon-test"></span>
     <span class="iconfont icon-icon-test1"></span>
     <span class="iconfont icon-icon-test2"></span>
     <span class="iconfont icon-icon-test3"></span>
     <div id="box"></div>
     <img src="./397k.jpg" alt="麦克雷">
-    <img src="./33.7k.jpg" alt="VUE">
+    <img src="./33.7k.jpg" alt="VUE"> -->
+
+    <script>
+        let type = "WebGL"
+
+        //检查是否支持webgl
+        if (!PIXI.utils.isWebGLSupported()) {
+            //不支持使用canvas
+            type = "canvas"
+        }
+
+        //指定渲染引擎
+        PIXI.utils.sayHello(type)
+
+        //创建一个pixi应用
+        let app = new PIXI.Application({
+            width: 1024, // default: 800
+            height: 1024, // default: 600
+            antialias: true, // default: false
+            transparent: false, // default: false
+            resolution: 1, // default: 1
+            backgroundColor: 0x061639
+        });
+
+        //支持多个应用
+        // let app2 = new PIXI.Application({
+        //     width: 256, // default: 800
+        //     height: 256, // default: 600
+        //     antialias: true, // default: false
+        //     transparent: false, // default: false
+        //     resolution: 1, // default: 1
+        //     //backgroundColor = 0x061639
+        // });
+
+        //将Pixi自动为您创建的画布添加到HTML文档中
+        document.body.appendChild(app.view);
+        //document.body.appendChild(app2.view);
+
+        //也可以写在application里
+        //app.renderer.backgroundColor = 0x061639;
+
+        PIXI.loader
+            .add([
+                "397k.jpg",
+                "327k.jpg",
+                "33.7k.jpg"
+            ]) //加载图片
+            .on("progress", loadProgressHandler)
+            .load(loadOver); //加载后执行的函数
+
+        function loadProgressHandler(loader, resource) {
+            console.log("loading: " + resource.url);
+            console.log("progress: " + loader.progress + "%");
+        }
+
+        function loadOver() {
+            // console.log('ok');
+            let id = PIXI.loader.resources; //使用别名
+            let sprite = new PIXI.Sprite(id["397k.jpg"].texture);
+            //let sprite1 = new PIXI.Sprite(PIXI.loader.resources["327k.jpg"].texture);
+            //let sprite2 = new PIXI.Sprite(PIXI.loader.resources["33.7k.jpg"].texture);
+            app.stage.addChild(sprite);
+            //app.stage.addChild(sprite1);
+            //app.stage.addChild(sprite2);
+            sprite.position.set(600, 200);
+            sprite.scale.set(1, 1);
+
+            window.addEventListener("click", () => {
+                // app.stage.removeChild(sprite);S
+                sprite.visible = false;
+            })
+            let line = new PIXI.Graphics();
+            line.lineStyle(4, 0xFF3300, 1);
+            line.moveTo(100, 100);
+            line.lineTo(300, 300);
+            app.stage.addChild(line);
+
+
+            let rectangle = new PIXI.Graphics();
+            rectangle.lineStyle(4, 0xFF3300, 1);
+            rectangle.beginFill(0x66CCFF);
+            rectangle.drawRect(0, 0, 150, 150   );
+            rectangle.endFill();
+            rectangle.x = 0;
+            rectangle.y = 200;
+            app.stage.addChild(rectangle);
+
+            let style = new PIXI.TextStyle({
+                fontFamily: "Arial",
+                fontSize: 36,
+                fill: "white",
+                stroke: '#ff3300',
+                strokeThickness: 4,
+                dropShadow: true,
+                dropShadowColor: "#000000",
+                dropShadowBlur: 4,
+                dropShadowAngle: Math.PI / 6,
+                dropShadowDistance: 6,
+            });
+
+            let message = new PIXI.Text("Hello Pixi!", style);
+            app.stage.addChild(message);
+
+            app.ticker.add(delta => {
+                if (hitTestRectangle(rectangle, sprite)) {
+
+                    // message.text = "hit!";
+                    // sprite.tint = 0xff3300;
+                    message.text = "hit!";
+                    sprite.visible = false;
+
+                } else {
+                    rectangle.x += 1;
+                    // message.text = "No collision...";
+                    // sprite.tint = 0xccff99;
+                }
+            })
+
+        }
+        //碰撞检测
+        function hitTestRectangle(r1, r2) {
+
+            //Define the variables we'll need to calculate
+            let hit, combinedHalfWidths, combinedHalfHeights, vx, vy;
+
+            //hit will determine whether there's a collision
+            hit = false;
+
+            //Find the center points of each sprite
+            r1.centerX = r1.x + r1.width / 2;
+            r1.centerY = r1.y + r1.height / 2;
+            r2.centerX = r2.x + r2.width / 2;
+            r2.centerY = r2.y + r2.height / 2;
+
+            //Find the half-widths and half-heights of each sprite
+            r1.halfWidth = r1.width / 2;
+            r1.halfHeight = r1.height / 2;
+            r2.halfWidth = r2.width / 2;
+            r2.halfHeight = r2.height / 2;
+
+            //Calculate the distance vector between the sprites
+            vx = r1.centerX - r2.centerX;
+            vy = r1.centerY - r2.centerY;
+
+            //Figure out the combined half-widths and half-heights
+            combinedHalfWidths = r1.halfWidth + r2.halfWidth;
+            combinedHalfHeights = r1.halfHeight + r2.halfHeight;
+
+            //Check for a collision on the x axis
+            if (Math.abs(vx) < combinedHalfWidths) {
+
+                //A collision might be occuring. Check for a collision on the y axis
+                if (Math.abs(vy) < combinedHalfHeights) {
+
+                    //There's definitely a collision happening
+                    hit = true;
+                } else {
+
+                    //There's no collision on the y axis
+                    hit = false;
+                }
+            } else {
+
+                //There's no collision on the x axis
+                hit = false;
+            }
+
+            //`hit` will be either `true` or `false`
+            return hit;
+        };
+    </script>
+
+
 
 </body>
 
