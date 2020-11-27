@@ -13,13 +13,13 @@ module.exports = {
     mode: 'development',
     //调试服务
     devServer: {
-        contentBase: resolve(__dirname, 'build'),
+        contentBase: resolve(__dirname, '.'),
         compress: true,
         port: 3000,
         open: true
     },
     //调试工具
-    devtool: 'sourcr-map',
+    devtool: 'source-map',
 
     entry: './src/index.js',
 
@@ -32,7 +32,7 @@ module.exports = {
     module: {
         rules: [{
                 test: /\.tsx?$/,
-                loader: 'awesome-typescript-loader'
+                loader: 'ts-loader'
             },
             {
                 test: /\.less$/,
