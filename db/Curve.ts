@@ -2,8 +2,7 @@ import { Entity } from "./Entity";
 import { core } from "../lib/verb";
 import * as type from "./type";
 import { Graphics } from 'pixi.js';
-import { app } from "../core/app"
-import { PixiDraw  } from "../core/PixiDrawFun"
+import { PixiDraw  } from "../graphics/PixiDrawFun"
 
 export class Curve extends Entity {
 
